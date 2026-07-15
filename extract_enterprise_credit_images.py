@@ -91,11 +91,13 @@ def extract_images(outer_zip_path: str, output_dir: str) -> list:
 
 
 def main():
-    # 默认路径，可按需修改
-    OUTER_ZIP = r'C:\Users\shawn\Desktop\企业征信查询.zip'
-    OUTPUT_DIR = r'C:\Users\shawn\WorkBuddy\2026-07-15-09-29-05\extracted_images'
+    # 默认路径：当前目录下的 企业征信查询.zip，输出到当前目录
+    DEFAULT_ZIP = os.path.join(os.getcwd(), '企业征信查询.zip')
+    DEFAULT_OUTPUT_DIR = os.getcwd()
 
     # 支持命令行参数覆盖
+    OUTER_ZIP = DEFAULT_ZIP
+    OUTPUT_DIR = DEFAULT_OUTPUT_DIR
     if len(sys.argv) >= 2:
         OUTER_ZIP = sys.argv[1]
     if len(sys.argv) >= 3:
