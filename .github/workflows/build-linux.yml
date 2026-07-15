@@ -1,9 +1,7 @@
 name: Build Linux Executable
 
 on:
-  # 手动触发
   workflow_dispatch:
-  # 推送时自动触发
   push:
     paths:
       - 'extract_enterprise_credit_images.py'
@@ -22,6 +20,8 @@ jobs:
           docker run --rm -v "$PWD":/work -w /work \
             python:3.7-slim-buster bash -c '
               set -ex
+              # 修复 EOL Debian Buster 的 apt 源
+              echo "deb [trusted=yes] http://archive.debian.org/debian buster main" > /etc/apt/sources.list
               apt-get update -qq
               apt-get install -y -qq binutils file
               echo "=== glibc ==="
