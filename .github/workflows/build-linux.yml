@@ -1,0 +1,39 @@
+name: Build Linux Executable
+
+on:
+  # 手动触发
+  workflow_dispatch:
+  # 推送时自动触发
+  push:
+    paths:
+      - 'extract_enterprise_credit_images.py'
+      - '.github/workflows/build-linux.yml'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 检出代码
+        uses: actions/checkout@v4
+
+      - name: 设置 Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: 安装 PyInstaller
+        run: pip install pyinstaller==6.10.0
+
+      - name: 构建单文件可执行程序
+        run: |
+          pyinstaller --onefile --clean \
+            --name extract_credit_images \
+            extract_enterprise_credit_images.py
+
+      - name: 上传构建产物
+        uses: actions/upload-artifact@v4
+        with:
+          name: extract_credit_images-linux
+          path: dist/extract_credit_images
+          if-no-files-found: error
