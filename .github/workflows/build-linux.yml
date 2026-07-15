@@ -17,19 +17,24 @@ jobs:
       - name: 检出代码
         uses: actions/checkout@v4
 
-      - name: 设置 Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: '3.11'
-
-      - name: 安装 PyInstaller
-        run: pip install pyinstaller==6.10.0
-
-      - name: 构建单文件可执行程序
+      - name: 在 manylinux2014 容器中构建（glibc 2.17，最大兼容性）
         run: |
-          pyinstaller --onefile --clean \
-            --name extract_credit_images \
-            extract_enterprise_credit_images.py
+          docker run --rm -v "$PWD":/work -w /work \
+            quay.io/pypa/manylinux2014_aarch64 bash -c '
+              set -e
+              echo "=== glibc 版本 ==="
+              ldd --version | head -1
+              echo "=== Python 版本 ==="
+              /opt/python/cp311-cp311/bin/python3 --version
+              echo "=== 安装 PyInstaller ==="
+              /opt/python/cp311-cp311/bin/pip install pyinstaller==6.10.0
+              echo "=== 构建 ==="
+              /opt/python/cp311-cp311/bin/pyinstaller --onefile --clean \
+                --name extract_credit_images \
+                extract_enterprise_credit_images.py
+              echo "=== 完成 ==="
+              file dist/extract_credit_images
+            '
 
       - name: 上传构建产物
         uses: actions/upload-artifact@v4
